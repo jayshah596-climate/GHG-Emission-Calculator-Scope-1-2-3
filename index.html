@@ -1,0 +1,1002 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font-sans,system-ui);font-size:14px;color:var(--color-text-primary,#1a1a1a);background:transparent;padding:0 0 2rem}
+.header{padding:1.1rem 1.5rem .9rem;border-bottom:0.5px solid var(--color-border-tertiary,#e0e0e0);display:flex;justify-content:space-between;align-items:flex-start}
+.header h1{font-size:19px;font-weight:500;margin-bottom:2px}
+.subtitle{font-size:11px;color:var(--color-text-secondary,#666)}
+.region-bar{display:flex;gap:8px;align-items:center;padding:10px 1.5rem;background:var(--color-background-secondary,#f7f7f5);border-bottom:0.5px solid var(--color-border-tertiary,#e0e0e0);flex-wrap:wrap}
+.region-bar label{font-size:12px;font-weight:500;color:var(--color-text-secondary,#555)}
+.region-btn{padding:5px 14px;border-radius:20px;border:0.5px solid var(--color-border-secondary,#ccc);font-size:12px;cursor:pointer;background:var(--color-background-primary,#fff);color:var(--color-text-primary,#1a1a1a);transition:all .15s;display:flex;align-items:center;gap:5px}
+.region-btn.active{background:#3266ad;color:#fff;border-color:#3266ad}
+.region-btn .flag{font-size:14px}
+.tabs{display:flex;gap:0;border-bottom:0.5px solid var(--color-border-tertiary,#e0e0e0);padding:0 1.5rem;background:var(--color-background-secondary,#f7f7f5);overflow-x:auto}
+.tab{padding:9px 16px;font-size:12px;font-weight:400;cursor:pointer;border-bottom:2px solid transparent;color:var(--color-text-secondary,#666);white-space:nowrap;transition:all .15s}
+.tab.active{color:var(--color-text-primary,#1a1a1a);border-bottom-color:#3266ad;font-weight:500}
+.tab:hover:not(.active){color:var(--color-text-primary,#1a1a1a)}
+.content{padding:1.1rem 1.5rem}
+.scope-badge{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:500;padding:3px 10px;border-radius:20px;margin-bottom:10px}
+.s1{background:#E6F1FB;color:#0C447C}.s2{background:#EAF3DE;color:#27500A}.s3{background:#FAEEDA;color:#633806}
+.section-title{font-size:12px;font-weight:500;color:var(--color-text-secondary,#555);margin:14px 0 8px;padding-bottom:5px;border-bottom:0.5px solid var(--color-border-tertiary,#e0e0e0)}
+.add-row{display:flex;gap:8px;align-items:flex-end;margin-bottom:10px;flex-wrap:wrap}
+.form-group{flex:1;min-width:110px}
+label.fl{font-size:11px;color:var(--color-text-secondary,#666);display:block;margin-bottom:3px}
+select,input[type=number]{width:100%;padding:6px 8px;border:0.5px solid var(--color-border-tertiary,#e0e0e0);border-radius:6px;font-size:12px;background:var(--color-background-primary,#fff);color:var(--color-text-primary,#1a1a1a)}
+select:focus,input:focus{outline:none;border-color:#3266ad}
+.btn{padding:6px 14px;border:0.5px solid var(--color-border-secondary,#ccc);border-radius:6px;font-size:12px;cursor:pointer;background:var(--color-background-primary,#fff);color:var(--color-text-primary,#1a1a1a);transition:all .15s;white-space:nowrap}
+.btn:hover{background:var(--color-background-secondary,#f5f5f5)}
+.btn-primary{background:#3266ad;color:#fff;border-color:#3266ad}
+.btn-primary:hover{background:#1e4d8c}
+.btn-danger{background:#fef2f2;color:#991b1b;border-color:#fca5a5;font-size:11px;padding:3px 8px}
+.btn-export{background:#059669;color:#fff;border-color:#059669;font-size:12px;padding:6px 14px}
+.btn-export:hover{background:#047857}
+.ef-info{font-size:11px;color:var(--color-text-secondary,#666);padding:7px 10px;background:var(--color-background-secondary,#f7f7f5);border-radius:6px;margin-bottom:10px;line-height:1.5}
+.entries-table{width:100%;border-collapse:collapse;font-size:11px;margin-top:10px}
+.entries-table th{text-align:left;padding:6px 8px;border-bottom:0.5px solid var(--color-border-tertiary,#e0e0e0);font-weight:500;color:var(--color-text-secondary,#666);background:var(--color-background-secondary,#f7f7f5)}
+.entries-table td{padding:6px 8px;border-bottom:0.5px solid var(--color-border-tertiary,#e0e0e0);vertical-align:middle}
+.total-row td{font-weight:500;background:var(--color-background-secondary,#f7f7f5)}
+.metric-cards{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:1.2rem}
+.metric-card{background:var(--color-background-secondary,#f7f7f5);border-radius:8px;padding:12px 14px}
+.metric-card .mlabel{font-size:11px;color:var(--color-text-secondary,#666);margin-bottom:4px}
+.metric-card .mvalue{font-size:20px;font-weight:500}
+.metric-card .munit{font-size:11px;color:var(--color-text-secondary,#666);margin-top:2px}
+.charts-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+.chart-box{background:var(--color-background-primary,#fff);border:0.5px solid var(--color-border-tertiary,#e0e0e0);border-radius:8px;padding:12px}
+.chart-box h3{font-size:12px;font-weight:500;margin-bottom:10px}
+.legend{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:8px;font-size:11px;color:var(--color-text-secondary,#666)}
+.legend span{display:flex;align-items:center;gap:4px}
+.ldot{width:10px;height:10px;border-radius:2px;display:inline-block}
+.tag{display:inline-flex;padding:2px 7px;border-radius:10px;font-size:10px;font-weight:500}
+.tag-s1{background:#E6F1FB;color:#0C447C}.tag-s2{background:#EAF3DE;color:#27500A}.tag-s3{background:#FAEEDA;color:#633806}
+.tag-uk{background:#dbeafe;color:#1e40af}.tag-usa{background:#dcfce7;color:#166534}.tag-india{background:#fef9c3;color:#713f12}.tag-eu{background:#ede9fe;color:#4c1d95}.tag-global{background:#f1f5f9;color:#334155}
+.empty-state{text-align:center;padding:1.5rem;color:var(--color-text-secondary,#666);font-size:12px}
+.ef-table{width:100%;border-collapse:collapse;font-size:11px}
+.ef-table th{text-align:left;padding:7px 10px;border-bottom:0.5px solid var(--color-border-tertiary,#e0e0e0);font-weight:500;font-size:11px;color:var(--color-text-secondary,#666);background:var(--color-background-secondary,#f7f7f5);position:sticky;top:0}
+.ef-table td{padding:6px 10px;border-bottom:0.5px solid var(--color-border-tertiary,#e0e0e0)}
+.ef-table tr:hover td{background:var(--color-background-secondary,#f7f7f5)}
+.export-panel{background:var(--color-background-primary,#fff);border:0.5px solid var(--color-border-tertiary,#e0e0e0);border-radius:8px;padding:16px;margin-bottom:14px}
+.export-panel h3{font-size:13px;font-weight:500;margin-bottom:12px}
+.export-btns{display:flex;gap:10px;flex-wrap:wrap}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div>
+    <h1>GHG Emissions Calculator</h1>
+    <div class="subtitle">Multi-region emission factors &nbsp;|&nbsp; Scopes 1, 2 &amp; 3 &nbsp;|&nbsp; GHG Protocol aligned &nbsp;|&nbsp; tCO₂e</div>
+  </div>
+</div>
+
+<!-- Region Selector -->
+<div class="region-bar">
+  <label>Active EF source:</label>
+  <button class="region-btn active" onclick="setRegion('UK',this)"><span class="flag">🇬🇧</span> UK DEFRA 2025</button>
+  <button class="region-btn" onclick="setRegion('USA',this)"><span class="flag">🇺🇸</span> USA EPA 2024</button>
+  <button class="region-btn" onclick="setRegion('INDIA',this)"><span class="flag">🇮🇳</span> India CEA/MoEFCC 2024</button>
+  <button class="region-btn" onclick="setRegion('EU',this)"><span class="flag">🇪🇺</span> EU EEA/IPCC 2024</button>
+  <button class="region-btn" onclick="setRegion('GLOBAL',this)"><span class="flag">🌐</span> Global IPCC AR6</button>
+  <span id="region-label" style="font-size:11px;color:var(--color-text-secondary,#666);margin-left:4px">— UK DEFRA 2025 active</span>
+</div>
+
+<div class="tabs">
+  <div class="tab active" onclick="switchTab('scope1',this)">Scope 1 — Direct</div>
+  <div class="tab" onclick="switchTab('scope2',this)">Scope 2 — Electricity</div>
+  <div class="tab" onclick="switchTab('scope3',this)">Scope 3 — Value Chain</div>
+  <div class="tab" onclick="switchTab('dashboard',this)">Dashboard</div>
+  <div class="tab" onclick="switchTab('ef',this)">EF Library</div>
+  <div class="tab" onclick="switchTab('export',this)">Export Report</div>
+</div>
+
+<!-- SCOPE 1 -->
+<div id="tab-scope1" class="content">
+  <span class="scope-badge s1">Scope 1 — Direct Emissions</span>
+  <p style="font-size:12px;color:var(--color-text-secondary,#666);margin-bottom:12px">Emissions from sources owned or controlled by your organisation.</p>
+  <div id="s1-ef-info" class="ef-info"></div>
+
+  <div class="section-title">Stationary Combustion — Fuel</div>
+  <div class="add-row">
+    <div class="form-group"><label class="fl">Fuel type</label><select id="s1-fuel"></select></div>
+    <div class="form-group" style="max-width:120px"><label class="fl">Quantity</label><input type="number" id="s1-fuel-qty" min="0" value="1000"></div>
+    <div class="form-group" style="max-width:90px"><label class="fl">Unit</label><select id="s1-fuel-unit"><option value="kWh">kWh</option><option value="litres" selected>litres</option><option value="tonnes">tonnes</option><option value="GJ">GJ</option></select></div>
+    <button class="btn btn-primary" style="align-self:flex-end" onclick="addEntry('s1','fuel')">Add</button>
+  </div>
+
+  <div class="section-title">Mobile Combustion — Fleet</div>
+  <div class="add-row">
+    <div class="form-group"><label class="fl">Vehicle type</label><select id="s1-fleet"></select></div>
+    <div class="form-group" style="max-width:130px"><label class="fl">Distance (km)</label><input type="number" id="s1-fleet-qty" min="0" value="10000"></div>
+    <button class="btn btn-primary" style="align-self:flex-end" onclick="addEntry('s1','fleet')">Add</button>
+  </div>
+
+  <div class="section-title">Fugitive Emissions — Refrigerants</div>
+  <div class="add-row">
+    <div class="form-group"><label class="fl">Refrigerant</label><select id="s1-refrig"></select></div>
+    <div class="form-group" style="max-width:120px"><label class="fl">Quantity (kg)</label><input type="number" id="s1-refrig-qty" min="0" value="10"></div>
+    <button class="btn btn-primary" style="align-self:flex-end" onclick="addEntry('s1','refrig')">Add</button>
+  </div>
+
+  <div id="s1-entries"></div>
+</div>
+
+<!-- SCOPE 2 -->
+<div id="tab-scope2" class="content" style="display:none">
+  <span class="scope-badge s2">Scope 2 — Electricity &amp; Heat</span>
+  <p style="font-size:12px;color:var(--color-text-secondary,#666);margin-bottom:12px">Emissions from purchased electricity, heat, steam, or cooling.</p>
+  <div id="s2-ef-info" class="ef-info"></div>
+
+  <div class="section-title">Electricity Consumption</div>
+  <div class="add-row">
+    <div class="form-group"><label class="fl">Grid / method</label><select id="s2-elec"></select></div>
+    <div class="form-group" style="max-width:140px"><label class="fl">Consumption (kWh)</label><input type="number" id="s2-elec-qty" min="0" value="50000"></div>
+    <button class="btn btn-primary" style="align-self:flex-end" onclick="addEntry('s2','elec')">Add</button>
+  </div>
+
+  <div class="section-title">Purchased Heat / Steam / Cooling</div>
+  <div class="add-row">
+    <div class="form-group"><label class="fl">Energy type</label><select id="s2-heat"></select></div>
+    <div class="form-group" style="max-width:130px"><label class="fl">Quantity (kWh)</label><input type="number" id="s2-heat-qty" min="0" value="5000"></div>
+    <button class="btn btn-primary" style="align-self:flex-end" onclick="addEntry('s2','heat')">Add</button>
+  </div>
+
+  <div id="s2-entries"></div>
+</div>
+
+<!-- SCOPE 3 -->
+<div id="tab-scope3" class="content" style="display:none">
+  <span class="scope-badge s3">Scope 3 — Value Chain</span>
+  <p style="font-size:12px;color:var(--color-text-secondary,#666);margin-bottom:12px">GHG Protocol 15 categories. Select a category and add activity data.</p>
+
+  <div class="add-row" style="margin-bottom:14px">
+    <div class="form-group" style="min-width:200px"><label class="fl">Scope 3 category</label>
+      <select id="s3-cat" onchange="updateS3Sub()">
+        <option value="biz_travel">Cat 6 — Business travel</option>
+        <option value="employee_commute">Cat 7 — Employee commuting</option>
+        <option value="freight_up">Cat 4 — Upstream freight</option>
+        <option value="freight_down">Cat 9 — Downstream freight</option>
+        <option value="waste">Cat 5 — Waste in operations</option>
+        <option value="water">Water supply &amp; treatment</option>
+        <option value="hotel">Cat 6 — Hotel stays</option>
+        <option value="purchased_goods">Cat 1 — Purchased goods (spend)</option>
+        <option value="capital_goods">Cat 2 — Capital goods (spend)</option>
+        <option value="fuel_energy">Cat 3 — Fuel &amp; energy (WTT)</option>
+        <option value="end_of_life">Cat 12 — End of life</option>
+        <option value="paper">Paper &amp; materials</option>
+      </select>
+    </div>
+  </div>
+  <div id="s3-input-panel"></div>
+  <div id="s3-entries"></div>
+</div>
+
+<!-- DASHBOARD -->
+<div id="tab-dashboard" class="content" style="display:none">
+  <div class="metric-cards">
+    <div class="metric-card"><div class="mlabel">Total Emissions</div><div class="mvalue" id="mc-total">0.000</div><div class="munit">tCO₂e</div></div>
+    <div class="metric-card"><div class="mlabel">Scope 1</div><div class="mvalue" id="mc-s1">0.000</div><div class="munit">tCO₂e</div></div>
+    <div class="metric-card"><div class="mlabel">Scope 2</div><div class="mvalue" id="mc-s2">0.000</div><div class="munit">tCO₂e</div></div>
+    <div class="metric-card"><div class="mlabel">Scope 3</div><div class="mvalue" id="mc-s3">0.000</div><div class="munit">tCO₂e</div></div>
+  </div>
+  <div class="charts-grid">
+    <div class="chart-box">
+      <h3>Emissions by scope</h3>
+      <div class="legend" id="donut-legend"></div>
+      <div style="position:relative;height:220px"><canvas id="donutChart"></canvas></div>
+    </div>
+    <div class="chart-box">
+      <h3>Category breakdown (tCO₂e)</h3>
+      <div style="position:relative;height:240px"><canvas id="barChart"></canvas></div>
+    </div>
+  </div>
+  <div class="chart-box" style="margin-bottom:14px">
+    <h3>Scope 3 sub-category analysis</h3>
+    <div style="position:relative;height:200px" id="s3chart-wrap"><canvas id="s3Chart"></canvas></div>
+  </div>
+  <div id="summary-table"></div>
+</div>
+
+<!-- EF LIBRARY -->
+<div id="tab-ef" class="content" style="display:none">
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;flex-wrap:wrap;gap:8px">
+    <div>
+      <h2 style="font-size:14px;font-weight:500;margin:0">Emission Factors Library</h2>
+      <div class="subtitle">UK DEFRA 2025 · USA EPA 2024 · India CEA/MoEFCC 2024 · EU EEA 2024 · Global IPCC AR6</div>
+    </div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <select id="ef-region-filter" onchange="renderEFTable()" style="font-size:11px;padding:5px 8px;border:0.5px solid var(--color-border-tertiary,#e0e0e0);border-radius:6px;background:var(--color-background-primary,#fff);color:var(--color-text-primary)">
+        <option value="all">All regions</option>
+        <option value="UK">UK DEFRA</option>
+        <option value="USA">USA EPA</option>
+        <option value="INDIA">India</option>
+        <option value="EU">EU EEA</option>
+        <option value="GLOBAL">Global IPCC</option>
+      </select>
+      <select id="ef-scope-filter" onchange="renderEFTable()" style="font-size:11px;padding:5px 8px;border:0.5px solid var(--color-border-tertiary,#e0e0e0);border-radius:6px;background:var(--color-background-primary,#fff);color:var(--color-text-primary)">
+        <option value="all">All scopes</option>
+        <option value="1">Scope 1</option>
+        <option value="2">Scope 2</option>
+        <option value="3">Scope 3</option>
+      </select>
+      <input type="text" id="ef-search" placeholder="Search activities..." onkeyup="renderEFTable()" style="font-size:11px;padding:5px 8px;width:150px;border:0.5px solid var(--color-border-tertiary,#e0e0e0);border-radius:6px;background:var(--color-background-primary,#fff);color:var(--color-text-primary)">
+    </div>
+  </div>
+  <div id="ef-table-container" style="max-height:520px;overflow-y:auto"></div>
+</div>
+
+<!-- EXPORT -->
+<div id="tab-export" class="content" style="display:none">
+  <div class="export-panel">
+    <h3>Export GHG Emissions Report</h3>
+    <p style="font-size:12px;color:var(--color-text-secondary,#666);margin-bottom:14px">Download your complete emissions inventory in your preferred format.</p>
+    <div style="margin-bottom:12px">
+      <label class="fl">Organisation name (optional)</label>
+      <input type="text" id="org-name" placeholder="e.g. Acme Ltd" style="max-width:280px">
+    </div>
+    <div style="margin-bottom:12px">
+      <label class="fl">Reporting year</label>
+      <input type="text" id="report-year" value="2025" style="max-width:100px">
+    </div>
+    <div style="margin-bottom:16px">
+      <label class="fl">Notes / boundary description</label>
+      <input type="text" id="report-notes" placeholder="e.g. Operational control, UK sites only" style="max-width:400px">
+    </div>
+    <div class="export-btns">
+      <button class="btn btn-export" onclick="exportTXT()">Download .TXT Report</button>
+      <button class="btn btn-export" onclick="exportCSV()">Download .CSV Data</button>
+      <button class="btn" onclick="printReport()">Print / Save as PDF</button>
+    </div>
+  </div>
+  <div id="export-preview" style="background:var(--color-background-primary,#fff);border:0.5px solid var(--color-border-tertiary,#e0e0e0);border-radius:8px;padding:16px;font-family:monospace;font-size:11px;white-space:pre-wrap;max-height:420px;overflow-y:auto;color:var(--color-text-primary)"></div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script>
+// ── EMISSION FACTORS DATABASE ──────────────────────────────────────────────
+const EF_DB = {
+  UK:{
+    label:"UK DEFRA 2025", source:"UK Government GHG Conversion Factors, DEFRA/DESNZ 2025",
+    fuel:{
+      natural_gas:{name:"Natural gas",ef:0.18289,unit:"kWh",scope:1,cat:"Stationary combustion"},
+      diesel:{name:"Diesel (gas oil)",ef:2.51567,unit:"litres",scope:1,cat:"Stationary combustion"},
+      petrol:{name:"Petrol",ef:2.19367,unit:"litres",scope:1,cat:"Stationary combustion"},
+      lpg:{name:"LPG",ef:1.55540,unit:"litres",scope:1,cat:"Stationary combustion"},
+      coal:{name:"Coal (general)",ef:2341.10,unit:"tonnes",scope:1,cat:"Stationary combustion"},
+      biomass_wood:{name:"Biomass — wood logs",ef:0.01580,unit:"kWh",scope:1,cat:"Stationary combustion"},
+      fuel_oil:{name:"Fuel oil (class D)",ef:2.75401,unit:"litres",scope:1,cat:"Stationary combustion"},
+    },
+    fleet:{
+      car_petrol_small:{name:"Car — petrol (small <1.4L)",ef:0.14918,unit:"km",scope:1,cat:"Mobile combustion"},
+      car_petrol_med:{name:"Car — petrol (medium 1.4–2L)",ef:0.18890,unit:"km",scope:1,cat:"Mobile combustion"},
+      car_diesel_med:{name:"Car — diesel (medium)",ef:0.16216,unit:"km",scope:1,cat:"Mobile combustion"},
+      van_diesel:{name:"Van — diesel (up to 3.5t)",ef:0.26848,unit:"km",scope:1,cat:"Mobile combustion"},
+      hgv_rigid:{name:"HGV rigid (>3.5t)",ef:0.56165,unit:"km",scope:1,cat:"Mobile combustion"},
+      hgv_artic:{name:"HGV articulated",ef:0.89261,unit:"km",scope:1,cat:"Mobile combustion"},
+      motorcycle:{name:"Motorcycle (avg)",ef:0.11389,unit:"km",scope:1,cat:"Mobile combustion"},
+    },
+    refrig:{
+      r410a:{name:"R-410A",ef:2088,unit:"kg",scope:1,cat:"Fugitive emissions"},
+      r134a:{name:"R-134a",ef:1430,unit:"kg",scope:1,cat:"Fugitive emissions"},
+      r404a:{name:"R-404A",ef:3922,unit:"kg",scope:1,cat:"Fugitive emissions"},
+      r32:{name:"R-32",ef:675,unit:"kg",scope:1,cat:"Fugitive emissions"},
+      r22:{name:"R-22 (HCFC)",ef:1810,unit:"kg",scope:1,cat:"Fugitive emissions"},
+    },
+    elec:{
+      location:{name:"UK grid (location-based)",ef:0.20705,unit:"kWh",scope:2,cat:"Purchased electricity"},
+      market_rego:{name:"REGO-backed supply",ef:0.03390,unit:"kWh",scope:2,cat:"Purchased electricity"},
+      market_ppa:{name:"Direct PPA (renewable)",ef:0.0,unit:"kWh",scope:2,cat:"Purchased electricity"},
+      market_supplier:{name:"Supplier-specific (UK avg)",ef:0.18600,unit:"kWh",scope:2,cat:"Purchased electricity"},
+    },
+    heat:{
+      district_heat:{name:"District heating (UK avg)",ef:0.20400,unit:"kWh",scope:2,cat:"Purchased heat/steam"},
+      district_cool:{name:"District cooling",ef:0.07200,unit:"kWh",scope:2,cat:"Purchased heat/steam"},
+      steam:{name:"Steam (purchased)",ef:0.18500,unit:"kWh",scope:2,cat:"Purchased heat/steam"},
+    },
+    biz_travel:{
+      rail_national:{name:"Rail — national",ef:0.03549,unit:"km",scope:3,cat:"Business travel"},
+      rail_int:{name:"Rail — international",ef:0.00413,unit:"km",scope:3,cat:"Business travel"},
+      flight_dom:{name:"Flight — domestic economy",ef:0.24503,unit:"km",scope:3,cat:"Business travel"},
+      flight_short:{name:"Flight — short haul economy",ef:0.15119,unit:"km",scope:3,cat:"Business travel"},
+      flight_long:{name:"Flight — long haul economy",ef:0.14787,unit:"km",scope:3,cat:"Business travel"},
+      flight_business:{name:"Flight — long haul business",ef:0.42919,unit:"km",scope:3,cat:"Business travel"},
+      taxi:{name:"Taxi",ef:0.14549,unit:"km",scope:3,cat:"Business travel"},
+      bus_local:{name:"Bus — local",ef:0.10312,unit:"km",scope:3,cat:"Business travel"},
+    },
+    employee_commute:{
+      commute_car:{name:"Car (avg)",ef:0.17052,unit:"km",scope:3,cat:"Employee commuting"},
+      commute_bus:{name:"Bus",ef:0.10312,unit:"km",scope:3,cat:"Employee commuting"},
+      commute_rail:{name:"Rail",ef:0.03549,unit:"km",scope:3,cat:"Employee commuting"},
+      commute_ev:{name:"EV (UK grid)",ef:0.06019,unit:"km",scope:3,cat:"Employee commuting"},
+      commute_wfh:{name:"Working from home (per day)",ef:0.00257,unit:"day",scope:3,cat:"Employee commuting"},
+    },
+    freight_up:{
+      freight_hgv:{name:"HGV (avg load)",ef:0.10846,unit:"tonne.km",scope:3,cat:"Upstream freight"},
+      freight_van:{name:"Van (diesel)",ef:0.24455,unit:"tonne.km",scope:3,cat:"Upstream freight"},
+      freight_rail:{name:"Rail freight",ef:0.02823,unit:"tonne.km",scope:3,cat:"Upstream freight"},
+      freight_air:{name:"Air freight (short haul)",ef:1.71212,unit:"tonne.km",scope:3,cat:"Upstream freight"},
+      freight_sea:{name:"Sea freight (container)",ef:0.01234,unit:"tonne.km",scope:3,cat:"Upstream freight"},
+    },
+    freight_down:{
+      freight_hgv:{name:"HGV outbound (avg)",ef:0.10846,unit:"tonne.km",scope:3,cat:"Downstream freight"},
+      freight_air:{name:"Air outbound",ef:1.71212,unit:"tonne.km",scope:3,cat:"Downstream freight"},
+      freight_sea:{name:"Sea outbound (container)",ef:0.01234,unit:"tonne.km",scope:3,cat:"Downstream freight"},
+    },
+    waste:{
+      landfill_gen:{name:"Landfill — mixed waste",ef:467.37,unit:"tonnes",scope:3,cat:"Waste"},
+      landfill_food:{name:"Landfill — food waste",ef:655.79,unit:"tonnes",scope:3,cat:"Waste"},
+      recycling:{name:"Recycling (mixed)",ef:21.29,unit:"tonnes",scope:3,cat:"Waste"},
+      composting:{name:"Composting",ef:116.00,unit:"tonnes",scope:3,cat:"Waste"},
+      incineration:{name:"Incineration",ef:240.89,unit:"tonnes",scope:3,cat:"Waste"},
+      anaerobic:{name:"Anaerobic digestion",ef:52.48,unit:"tonnes",scope:3,cat:"Waste"},
+    },
+    water:{
+      water_supply:{name:"Water supply (UK)",ef:0.34900,unit:"m³",scope:3,cat:"Water"},
+      water_treat:{name:"Water treatment (UK)",ef:0.70800,unit:"m³",scope:3,cat:"Water"},
+    },
+    hotel:{
+      hotel_uk:{name:"Hotel — UK",ef:47.90,unit:"room nights",scope:3,cat:"Business travel"},
+      hotel_europe:{name:"Hotel — Europe",ef:74.87,unit:"room nights",scope:3,cat:"Business travel"},
+      hotel_row:{name:"Hotel — Rest of world",ef:76.51,unit:"room nights",scope:3,cat:"Business travel"},
+    },
+    purchased_goods:{
+      spend_food:{name:"Food & drink",ef:1.93,unit:"£k",scope:3,cat:"Purchased goods"},
+      spend_electronics:{name:"Electronics",ef:0.87,unit:"£k",scope:3,cat:"Purchased goods"},
+      spend_clothing:{name:"Clothing & textiles",ef:1.21,unit:"£k",scope:3,cat:"Purchased goods"},
+      spend_chemicals:{name:"Chemicals",ef:0.72,unit:"£k",scope:3,cat:"Purchased goods"},
+      spend_paper:{name:"Paper & cardboard",ef:0.95,unit:"£k",scope:3,cat:"Purchased goods"},
+    },
+    capital_goods:{
+      cap_machinery:{name:"Machinery & equipment",ef:0.48,unit:"£k",scope:3,cat:"Capital goods"},
+      cap_construction:{name:"Construction",ef:0.46,unit:"£k",scope:3,cat:"Capital goods"},
+      cap_vehicles:{name:"Vehicles",ef:0.72,unit:"£k",scope:3,cat:"Capital goods"},
+    },
+    fuel_energy:{
+      wtt_elec:{name:"WTT electricity (UK grid)",ef:0.01875,unit:"kWh",scope:3,cat:"Fuel & energy (WTT)"},
+      wtt_gas:{name:"WTT natural gas",ef:0.03474,unit:"kWh",scope:3,cat:"Fuel & energy (WTT)"},
+      wtt_diesel:{name:"WTT diesel",ef:0.66264,unit:"litres",scope:3,cat:"Fuel & energy (WTT)"},
+    },
+    end_of_life:{
+      eol_landfill:{name:"Product to landfill",ef:467.37,unit:"tonnes",scope:3,cat:"End of life"},
+      eol_recycle:{name:"Product to recycling",ef:21.29,unit:"tonnes",scope:3,cat:"End of life"},
+      eol_incinerate:{name:"Product to incineration",ef:240.89,unit:"tonnes",scope:3,cat:"End of life"},
+    },
+    paper:{
+      paper_a4:{name:"A4 copy paper",ef:1.67,unit:"reams",scope:3,cat:"Materials"},
+      paper_recycled:{name:"Recycled paper",ef:0.87,unit:"reams",scope:3,cat:"Materials"},
+      cardboard:{name:"Cardboard (corrugated)",ef:1120.00,unit:"tonnes",scope:3,cat:"Materials"},
+    }
+  },
+  USA:{
+    label:"USA EPA 2024", source:"EPA GHG Emission Factors Hub 2024 + eGRID 2023",
+    fuel:{
+      natural_gas:{name:"Natural gas",ef:0.18042,unit:"kWh",scope:1,cat:"Stationary combustion"},
+      diesel:{name:"Diesel fuel",ef:2.68100,unit:"litres",scope:1,cat:"Stationary combustion"},
+      petrol:{name:"Gasoline",ef:2.34600,unit:"litres",scope:1,cat:"Stationary combustion"},
+      lpg:{name:"Propane (LPG)",ef:1.54300,unit:"litres",scope:1,cat:"Stationary combustion"},
+      coal:{name:"Coal (bituminous)",ef:2591.00,unit:"tonnes",scope:1,cat:"Stationary combustion"},
+      fuel_oil:{name:"Fuel oil No.2",ef:2.70100,unit:"litres",scope:1,cat:"Stationary combustion"},
+      kerosene:{name:"Kerosene",ef:2.57700,unit:"litres",scope:1,cat:"Stationary combustion"},
+    },
+    fleet:{
+      car_petrol_small:{name:"Passenger car — gasoline (small)",ef:0.17500,unit:"km",scope:1,cat:"Mobile combustion"},
+      car_petrol_med:{name:"Passenger car — gasoline (med)",ef:0.21000,unit:"km",scope:1,cat:"Mobile combustion"},
+      car_diesel:{name:"Passenger car — diesel",ef:0.19200,unit:"km",scope:1,cat:"Mobile combustion"},
+      van_light:{name:"Light-duty truck / van",ef:0.29500,unit:"km",scope:1,cat:"Mobile combustion"},
+      hgv_class8:{name:"Class 8 HGV (long haul)",ef:0.93400,unit:"km",scope:1,cat:"Mobile combustion"},
+      motorcycle:{name:"Motorcycle",ef:0.12100,unit:"km",scope:1,cat:"Mobile combustion"},
+    },
+    refrig:{
+      r410a:{name:"R-410A",ef:2088,unit:"kg",scope:1,cat:"Fugitive emissions"},
+      r134a:{name:"R-134a",ef:1430,unit:"kg",scope:1,cat:"Fugitive emissions"},
+      r404a:{name:"R-404A",ef:3922,unit:"kg",scope:1,cat:"Fugitive emissions"},
+      r32:{name:"R-32",ef:675,unit:"kg",scope:1,cat:"Fugitive emissions"},
+      sf6:{name:"SF6 (electrical equipment)",ef:25200,unit:"kg",scope:1,cat:"Fugitive emissions"},
+    },
+    elec:{
+      us_avg:{name:"US national avg (eGRID 2023)",ef:0.38600,unit:"kWh",scope:2,cat:"Purchased electricity"},
+      egrid_wecc:{name:"eGRID WECC (Western)",ef:0.32700,unit:"kWh",scope:2,cat:"Purchased electricity"},
+      egrid_serc:{name:"eGRID SERC (Southeast)",ef:0.44200,unit:"kWh",scope:2,cat:"Purchased electricity"},
+      egrid_newe:{name:"eGRID NEWE (New England)",ef:0.24900,unit:"kWh",scope:2,cat:"Purchased electricity"},
+      renewable_ppa:{name:"Renewable PPA / REC",ef:0.0,unit:"kWh",scope:2,cat:"Purchased electricity"},
+    },
+    heat:{
+      steam_district:{name:"District steam (US avg)",ef:0.29500,unit:"kWh",scope:2,cat:"Purchased heat/steam"},
+      chilled_water:{name:"Chilled water (US avg)",ef:0.09200,unit:"kWh",scope:2,cat:"Purchased heat/steam"},
+    },
+    biz_travel:{
+      rail_amtrak:{name:"Rail — Amtrak (intercity)",ef:0.05900,unit:"km",scope:3,cat:"Business travel"},
+      rail_commuter:{name:"Rail — commuter",ef:0.17400,unit:"km",scope:3,cat:"Business travel"},
+      flight_dom:{name:"Flight — domestic economy",ef:0.25500,unit:"km",scope:3,cat:"Business travel"},
+      flight_short:{name:"Flight — short haul economy",ef:0.16100,unit:"km",scope:3,cat:"Business travel"},
+      flight_long:{name:"Flight — long haul economy",ef:0.15200,unit:"km",scope:3,cat:"Business travel"},
+      taxi_rideshare:{name:"Taxi / rideshare",ef:0.22300,unit:"km",scope:3,cat:"Business travel"},
+      bus_intercity:{name:"Bus — intercity",ef:0.06900,unit:"km",scope:3,cat:"Business travel"},
+    },
+    employee_commute:{
+      commute_car:{name:"Car (avg US)",ef:0.21000,unit:"km",scope:3,cat:"Employee commuting"},
+      commute_bus:{name:"Transit bus",ef:0.08900,unit:"km",scope:3,cat:"Employee commuting"},
+      commute_rail:{name:"Rail (commuter)",ef:0.17400,unit:"km",scope:3,cat:"Employee commuting"},
+      commute_ev:{name:"EV (US grid avg)",ef:0.12200,unit:"km",scope:3,cat:"Employee commuting"},
+    },
+    freight_up:{
+      freight_truck:{name:"Class 8 truck",ef:0.12200,unit:"tonne.km",scope:3,cat:"Upstream freight"},
+      freight_rail:{name:"Rail freight",ef:0.02200,unit:"tonne.km",scope:3,cat:"Upstream freight"},
+      freight_air:{name:"Air freight",ef:1.62000,unit:"tonne.km",scope:3,cat:"Upstream freight"},
+      freight_sea:{name:"Sea freight (container)",ef:0.01180,unit:"tonne.km",scope:3,cat:"Upstream freight"},
+    },
+    freight_down:{
+      freight_truck:{name:"Class 8 truck outbound",ef:0.12200,unit:"tonne.km",scope:3,cat:"Downstream freight"},
+      freight_air:{name:"Air outbound",ef:1.62000,unit:"tonne.km",scope:3,cat:"Downstream freight"},
+    },
+    waste:{
+      landfill_msw:{name:"Landfill — MSW",ef:527.00,unit:"tonnes",scope:3,cat:"Waste"},
+      recycling:{name:"Recycling (mixed)",ef:18.50,unit:"tonnes",scope:3,cat:"Waste"},
+      composting:{name:"Composting",ef:138.00,unit:"tonnes",scope:3,cat:"Waste"},
+      incineration:{name:"Combustion (WTE)",ef:286.00,unit:"tonnes",scope:3,cat:"Waste"},
+    },
+    water:{
+      water_supply:{name:"Water supply (US avg)",ef:0.37800,unit:"m³",scope:3,cat:"Water"},
+      water_treat:{name:"Wastewater treatment",ef:0.70200,unit:"m³",scope:3,cat:"Water"},
+    },
+    hotel:{
+      hotel_usa:{name:"Hotel — USA",ef:51.20,unit:"room nights",scope:3,cat:"Business travel"},
+      hotel_row:{name:"Hotel — rest of world",ef:76.51,unit:"room nights",scope:3,cat:"Business travel"},
+    },
+    purchased_goods:{
+      spend_food:{name:"Food & beverage",ef:2.10,unit:"$k",scope:3,cat:"Purchased goods"},
+      spend_electronics:{name:"Electronics",ef:0.92,unit:"$k",scope:3,cat:"Purchased goods"},
+      spend_chemicals:{name:"Chemicals",ef:0.81,unit:"$k",scope:3,cat:"Purchased goods"},
+    },
+    capital_goods:{
+      cap_machinery:{name:"Industrial machinery",ef:0.53,unit:"$k",scope:3,cat:"Capital goods"},
+      cap_construction:{name:"Construction",ef:0.49,unit:"$k",scope:3,cat:"Capital goods"},
+    },
+    fuel_energy:{
+      wtt_elec:{name:"T&D losses — electricity",ef:0.06200,unit:"kWh",scope:3,cat:"Fuel & energy (WTT)"},
+      wtt_gas:{name:"WTT natural gas",ef:0.03900,unit:"kWh",scope:3,cat:"Fuel & energy (WTT)"},
+    },
+    end_of_life:{
+      eol_landfill:{name:"Product to landfill",ef:527.00,unit:"tonnes",scope:3,cat:"End of life"},
+      eol_recycle:{name:"Product to recycling",ef:18.50,unit:"tonnes",scope:3,cat:"End of life"},
+    },
+    paper:{
+      paper_office:{name:"Office paper",ef:1.84,unit:"reams",scope:3,cat:"Materials"},
+      cardboard:{name:"Cardboard packaging",ef:1150.00,unit:"tonnes",scope:3,cat:"Materials"},
+    }
+  },
+  INDIA:{
+    label:"India CEA/MoEFCC 2024", source:"CEA Grid EF 2023-24 + MoEFCC GHG Inventory Guidelines",
+    fuel:{
+      natural_gas:{name:"Natural gas (piped)",ef:0.18900,unit:"kWh",scope:1,cat:"Stationary combustion"},
+      diesel:{name:"High-speed diesel (HSD)",ef:2.68200,unit:"litres",scope:1,cat:"Stationary combustion"},
+      petrol:{name:"Petrol (MS)",ef:2.29600,unit:"litres",scope:1,cat:"Stationary combustion"},
+      lpg:{name:"LPG (domestic/commercial)",ef:1.61200,unit:"litres",scope:1,cat:"Stationary combustion"},
+      coal_indian:{name:"Indian coal (non-coking)",ef:2556.00,unit:"tonnes",scope:1,cat:"Stationary combustion"},
+      furnace_oil:{name:"Furnace oil",ef:3.19500,unit:"litres",scope:1,cat:"Stationary combustion"},
+      biomass:{name:"Biomass (agricultural residue)",ef:0.00840,unit:"kWh",scope:1,cat:"Stationary combustion"},
+    },
+    fleet:{
+      car_petrol:{name:"Car — petrol (avg India)",ef:0.16800,unit:"km",scope:1,cat:"Mobile combustion"},
+      car_diesel:{name:"Car — diesel (avg India)",ef:0.14900,unit:"km",scope:1,cat:"Mobile combustion"},
+      two_wheeler:{name:"Two-wheeler (petrol)",ef:0.06300,unit:"km",scope:1,cat:"Mobile combustion"},
+      auto_cng:{name:"Auto-rickshaw (CNG)",ef:0.08200,unit:"km",scope:1,cat:"Mobile combustion"},
+      truck_diesel:{name:"Truck — diesel (medium)",ef:0.65200,unit:"km",scope:1,cat:"Mobile combustion"},
+    },
+    refrig:{
+      r410a:{name:"R-410A",ef:2088,unit:"kg",scope:1,cat:"Fugitive emissions"},
+      r134a:{name:"R-134a",ef:1430,unit:"kg",scope:1,cat:"Fugitive emissions"},
+      r22:{name:"R-22 (HCFC)",ef:1810,unit:"kg",scope:1,cat:"Fugitive emissions"},
+    },
+    elec:{
+      national_grid:{name:"India national grid (CEA 2023-24)",ef:0.71600,unit:"kWh",scope:2,cat:"Purchased electricity"},
+      northern:{name:"Northern region grid",ef:0.74200,unit:"kWh",scope:2,cat:"Purchased electricity"},
+      southern:{name:"Southern region grid",ef:0.64800,unit:"kWh",scope:2,cat:"Purchased electricity"},
+      western:{name:"Western region grid",ef:0.76100,unit:"kWh",scope:2,cat:"Purchased electricity"},
+      eastern:{name:"Eastern region grid",ef:0.83500,unit:"kWh",scope:2,cat:"Purchased electricity"},
+      renewable_solar:{name:"Solar / wind (captive)",ef:0.0,unit:"kWh",scope:2,cat:"Purchased electricity"},
+    },
+    heat:{
+      steam_coal:{name:"Steam (coal boiler, India avg)",ef:0.38100,unit:"kWh",scope:2,cat:"Purchased heat/steam"},
+    },
+    biz_travel:{
+      rail_ir:{name:"Rail — Indian Railways",ef:0.04560,unit:"km",scope:3,cat:"Business travel"},
+      flight_dom:{name:"Flight — domestic economy",ef:0.24800,unit:"km",scope:3,cat:"Business travel"},
+      flight_int:{name:"Flight — international economy",ef:0.15500,unit:"km",scope:3,cat:"Business travel"},
+      taxi_petrol:{name:"Taxi — petrol",ef:0.16800,unit:"km",scope:3,cat:"Business travel"},
+      taxi_cng:{name:"Taxi — CNG",ef:0.09600,unit:"km",scope:3,cat:"Business travel"},
+      bus_city:{name:"Bus — city (diesel)",ef:0.09200,unit:"km",scope:3,cat:"Business travel"},
+    },
+    employee_commute:{
+      commute_car:{name:"Car (avg India)",ef:0.16000,unit:"km",scope:3,cat:"Employee commuting"},
+      commute_2w:{name:"Two-wheeler",ef:0.06300,unit:"km",scope:3,cat:"Employee commuting"},
+      commute_metro:{name:"Metro rail",ef:0.04800,unit:"km",scope:3,cat:"Employee commuting"},
+      commute_bus:{name:"City bus",ef:0.09200,unit:"km",scope:3,cat:"Employee commuting"},
+    },
+    freight_up:{
+      freight_truck:{name:"Truck (diesel, medium)",ef:0.11800,unit:"tonne.km",scope:3,cat:"Upstream freight"},
+      freight_rail:{name:"Rail freight (IR)",ef:0.03200,unit:"tonne.km",scope:3,cat:"Upstream freight"},
+      freight_sea:{name:"Sea freight (container)",ef:0.01234,unit:"tonne.km",scope:3,cat:"Upstream freight"},
+    },
+    freight_down:{
+      freight_truck:{name:"Truck outbound (diesel)",ef:0.11800,unit:"tonne.km",scope:3,cat:"Downstream freight"},
+      freight_rail:{name:"Rail outbound",ef:0.03200,unit:"tonne.km",scope:3,cat:"Downstream freight"},
+    },
+    waste:{
+      landfill_mixed:{name:"Landfill — mixed MSW (India)",ef:510.00,unit:"tonnes",scope:3,cat:"Waste"},
+      open_burning:{name:"Open burning (field)",ef:1180.00,unit:"tonnes",scope:3,cat:"Waste"},
+      composting:{name:"Composting",ef:120.00,unit:"tonnes",scope:3,cat:"Waste"},
+    },
+    water:{
+      water_supply:{name:"Water supply (India avg)",ef:0.39600,unit:"m³",scope:3,cat:"Water"},
+    },
+    hotel:{
+      hotel_india:{name:"Hotel — India",ef:33.50,unit:"room nights",scope:3,cat:"Business travel"},
+    },
+    purchased_goods:{
+      spend_food:{name:"Food & agri-produce",ef:2.21,unit:"₹k",scope:3,cat:"Purchased goods"},
+      spend_steel:{name:"Steel products",ef:1.85,unit:"₹k",scope:3,cat:"Purchased goods"},
+    },
+    capital_goods:{
+      cap_construction:{name:"Construction (India)",ef:0.52,unit:"₹k",scope:3,cat:"Capital goods"},
+    },
+    fuel_energy:{
+      wtt_elec:{name:"T&D losses — India grid",ef:0.08600,unit:"kWh",scope:3,cat:"Fuel & energy (WTT)"},
+      wtt_diesel:{name:"WTT diesel (India)",ef:0.73200,unit:"litres",scope:3,cat:"Fuel & energy (WTT)"},
+    },
+    end_of_life:{
+      eol_landfill:{name:"Product to landfill",ef:510.00,unit:"tonnes",scope:3,cat:"End of life"},
+      eol_recycle:{name:"Recycling",ef:23.00,unit:"tonnes",scope:3,cat:"End of life"},
+    },
+    paper:{
+      paper_office:{name:"Office paper (India)",ef:1.72,unit:"reams",scope:3,cat:"Materials"},
+    }
+  },
+  EU:{
+    label:"EU EEA/IPCC 2024", source:"EEA GHG Inventory 2024 + IPCC AR6 GWP100 + EC Joint Research Centre",
+    fuel:{
+      natural_gas:{name:"Natural gas",ef:0.20200,unit:"kWh",scope:1,cat:"Stationary combustion"},
+      diesel:{name:"Gas oil / diesel",ef:2.65700,unit:"litres",scope:1,cat:"Stationary combustion"},
+      petrol:{name:"Petrol (gasoline)",ef:2.26200,unit:"litres",scope:1,cat:"Stationary combustion"},
+      lpg:{name:"LPG",ef:1.57800,unit:"litres",scope:1,cat:"Stationary combustion"},
+      coal_hard:{name:"Hard coal",ef:2424.00,unit:"tonnes",scope:1,cat:"Stationary combustion"},
+      lignite:{name:"Lignite (brown coal)",ef:1650.00,unit:"tonnes",scope:1,cat:"Stationary combustion"},
+      fuel_oil:{name:"Heavy fuel oil",ef:3.18100,unit:"litres",scope:1,cat:"Stationary combustion"},
+      biomass_pellets:{name:"Wood pellets",ef:0.01840,unit:"kWh",scope:1,cat:"Stationary combustion"},
+    },
+    fleet:{
+      car_petrol:{name:"Car — petrol (EU avg)",ef:0.16700,unit:"km",scope:1,cat:"Mobile combustion"},
+      car_diesel:{name:"Car — diesel (EU avg)",ef:0.15900,unit:"km",scope:1,cat:"Mobile combustion"},
+      car_ev:{name:"Car — BEV (EU grid avg)",ef:0.07900,unit:"km",scope:1,cat:"Mobile combustion"},
+      van_diesel:{name:"Van — diesel (N1)",ef:0.24100,unit:"km",scope:1,cat:"Mobile combustion"},
+      hgv:{name:"HGV (avg)",ef:0.72000,unit:"km",scope:1,cat:"Mobile combustion"},
+    },
+    refrig:{
+      r410a:{name:"R-410A",ef:2088,unit:"kg",scope:1,cat:"Fugitive emissions"},
+      r134a:{name:"R-134a",ef:1430,unit:"kg",scope:1,cat:"Fugitive emissions"},
+      r404a:{name:"R-404A",ef:3922,unit:"kg",scope:1,cat:"Fugitive emissions"},
+      r32:{name:"R-32",ef:675,unit:"kg",scope:1,cat:"Fugitive emissions"},
+    },
+    elec:{
+      eu_avg:{name:"EU-27 avg (EEA 2023)",ef:0.23300,unit:"kWh",scope:2,cat:"Purchased electricity"},
+      germany:{name:"Germany (2023)",ef:0.38400,unit:"kWh",scope:2,cat:"Purchased electricity"},
+      france:{name:"France (2023 — nuclear heavy)",ef:0.05100,unit:"kWh",scope:2,cat:"Purchased electricity"},
+      spain:{name:"Spain (2023)",ef:0.19200,unit:"kWh",scope:2,cat:"Purchased electricity"},
+      italy:{name:"Italy (2023)",ef:0.29600,unit:"kWh",scope:2,cat:"Purchased electricity"},
+      poland:{name:"Poland (2023 — coal heavy)",ef:0.73600,unit:"kWh",scope:2,cat:"Purchased electricity"},
+      nordic:{name:"Nordic mix (SE/NO/FI)",ef:0.04900,unit:"kWh",scope:2,cat:"Purchased electricity"},
+      renewable_ppa:{name:"Renewable PPA / GO-backed",ef:0.0,unit:"kWh",scope:2,cat:"Purchased electricity"},
+    },
+    heat:{
+      district_heat:{name:"District heating (EU avg)",ef:0.18700,unit:"kWh",scope:2,cat:"Purchased heat/steam"},
+      steam:{name:"Steam (industrial, EU avg)",ef:0.21200,unit:"kWh",scope:2,cat:"Purchased heat/steam"},
+    },
+    biz_travel:{
+      rail_eu:{name:"Rail — Eurostar / TGV",ef:0.00410,unit:"km",scope:3,cat:"Business travel"},
+      rail_regional:{name:"Rail — regional",ef:0.02890,unit:"km",scope:3,cat:"Business travel"},
+      flight_dom:{name:"Flight — intra-EU economy",ef:0.25500,unit:"km",scope:3,cat:"Business travel"},
+      flight_long:{name:"Flight — long haul economy",ef:0.15200,unit:"km",scope:3,cat:"Business travel"},
+      taxi:{name:"Taxi (EU avg)",ef:0.15200,unit:"km",scope:3,cat:"Business travel"},
+      bus:{name:"Coach / bus",ef:0.02730,unit:"km",scope:3,cat:"Business travel"},
+    },
+    employee_commute:{
+      commute_car:{name:"Car (EU avg)",ef:0.16200,unit:"km",scope:3,cat:"Employee commuting"},
+      commute_bus:{name:"Bus (EU avg)",ef:0.08900,unit:"km",scope:3,cat:"Employee commuting"},
+      commute_rail:{name:"Rail (EU avg)",ef:0.02890,unit:"km",scope:3,cat:"Employee commuting"},
+      commute_ev:{name:"EV (EU grid avg)",ef:0.07900,unit:"km",scope:3,cat:"Employee commuting"},
+    },
+    freight_up:{
+      freight_hgv:{name:"HGV (EU avg)",ef:0.09760,unit:"tonne.km",scope:3,cat:"Upstream freight"},
+      freight_rail:{name:"Rail freight (EU)",ef:0.02290,unit:"tonne.km",scope:3,cat:"Upstream freight"},
+      freight_sea:{name:"Sea (container, intra-EU)",ef:0.01580,unit:"tonne.km",scope:3,cat:"Upstream freight"},
+      freight_air:{name:"Air freight",ef:1.65000,unit:"tonne.km",scope:3,cat:"Upstream freight"},
+    },
+    freight_down:{
+      freight_hgv:{name:"HGV outbound (EU avg)",ef:0.09760,unit:"tonne.km",scope:3,cat:"Downstream freight"},
+      freight_sea:{name:"Sea outbound",ef:0.01580,unit:"tonne.km",scope:3,cat:"Downstream freight"},
+    },
+    waste:{
+      landfill:{name:"Landfill (EU avg)",ef:450.00,unit:"tonnes",scope:3,cat:"Waste"},
+      recycling:{name:"Recycling (mixed)",ef:20.10,unit:"tonnes",scope:3,cat:"Waste"},
+      incineration:{name:"Incineration (WTE, EU)",ef:228.00,unit:"tonnes",scope:3,cat:"Waste"},
+      composting:{name:"Composting (biowaste)",ef:108.00,unit:"tonnes",scope:3,cat:"Waste"},
+    },
+    water:{
+      water_supply:{name:"Water supply (EU avg)",ef:0.37200,unit:"m³",scope:3,cat:"Water"},
+      water_treat:{name:"Wastewater treatment",ef:0.69400,unit:"m³",scope:3,cat:"Water"},
+    },
+    hotel:{
+      hotel_eu:{name:"Hotel — EU",ef:55.10,unit:"room nights",scope:3,cat:"Business travel"},
+    },
+    purchased_goods:{
+      spend_food:{name:"Food & beverages",ef:1.87,unit:"€k",scope:3,cat:"Purchased goods"},
+      spend_electronics:{name:"Electronics",ef:0.84,unit:"€k",scope:3,cat:"Purchased goods"},
+      spend_chemicals:{name:"Chemicals",ef:0.76,unit:"€k",scope:3,cat:"Purchased goods"},
+    },
+    capital_goods:{
+      cap_machinery:{name:"Machinery & equipment",ef:0.46,unit:"€k",scope:3,cat:"Capital goods"},
+      cap_construction:{name:"Construction (EU)",ef:0.44,unit:"€k",scope:3,cat:"Capital goods"},
+    },
+    fuel_energy:{
+      wtt_elec:{name:"WTT electricity (EU avg)",ef:0.02210,unit:"kWh",scope:3,cat:"Fuel & energy (WTT)"},
+      wtt_gas:{name:"WTT natural gas",ef:0.03920,unit:"kWh",scope:3,cat:"Fuel & energy (WTT)"},
+    },
+    end_of_life:{
+      eol_landfill:{name:"Product to landfill",ef:450.00,unit:"tonnes",scope:3,cat:"End of life"},
+      eol_recycle:{name:"Product to recycling",ef:20.10,unit:"tonnes",scope:3,cat:"End of life"},
+    },
+    paper:{
+      paper_a4:{name:"A4 paper (EU avg)",ef:1.55,unit:"reams",scope:3,cat:"Materials"},
+      cardboard:{name:"Cardboard packaging",ef:1080.00,unit:"tonnes",scope:3,cat:"Materials"},
+    }
+  },
+  GLOBAL:{
+    label:"Global IPCC AR6", source:"IPCC AR6 WG3 2022 + GHG Protocol defaults (GWP100, AR6)",
+    fuel:{
+      natural_gas:{name:"Natural gas",ef:0.20200,unit:"kWh",scope:1,cat:"Stationary combustion"},
+      diesel:{name:"Diesel oil",ef:2.66000,unit:"litres",scope:1,cat:"Stationary combustion"},
+      petrol:{name:"Petrol / gasoline",ef:2.30600,unit:"litres",scope:1,cat:"Stationary combustion"},
+      lpg:{name:"LPG",ef:1.56000,unit:"litres",scope:1,cat:"Stationary combustion"},
+      coal_bituminous:{name:"Coal (bituminous)",ef:2420.00,unit:"tonnes",scope:1,cat:"Stationary combustion"},
+      fuel_oil:{name:"Fuel oil (residual)",ef:3.15000,unit:"litres",scope:1,cat:"Stationary combustion"},
+      biomass:{name:"Biomass (general)",ef:0.01500,unit:"kWh",scope:1,cat:"Stationary combustion"},
+    },
+    fleet:{
+      car_petrol:{name:"Car — petrol (global avg)",ef:0.17900,unit:"km",scope:1,cat:"Mobile combustion"},
+      car_diesel:{name:"Car — diesel (global avg)",ef:0.16800,unit:"km",scope:1,cat:"Mobile combustion"},
+      hgv:{name:"HGV (global avg)",ef:0.80000,unit:"km",scope:1,cat:"Mobile combustion"},
+    },
+    refrig:{
+      r410a:{name:"R-410A",ef:2088,unit:"kg",scope:1,cat:"Fugitive emissions"},
+      r134a:{name:"R-134a",ef:1430,unit:"kg",scope:1,cat:"Fugitive emissions"},
+      r404a:{name:"R-404A",ef:3922,unit:"kg",scope:1,cat:"Fugitive emissions"},
+      r32:{name:"R-32",ef:675,unit:"kg",scope:1,cat:"Fugitive emissions"},
+    },
+    elec:{
+      global_avg:{name:"Global avg grid (IEA 2023)",ef:0.48900,unit:"kWh",scope:2,cat:"Purchased electricity"},
+      asia_avg:{name:"Asia-Pacific avg",ef:0.61200,unit:"kWh",scope:2,cat:"Purchased electricity"},
+      latam_avg:{name:"Latin America avg",ef:0.29400,unit:"kWh",scope:2,cat:"Purchased electricity"},
+      africa_avg:{name:"Africa avg",ef:0.64500,unit:"kWh",scope:2,cat:"Purchased electricity"},
+      renewable:{name:"Renewable (solar/wind)",ef:0.02000,unit:"kWh",scope:2,cat:"Purchased electricity"},
+    },
+    heat:{
+      steam_global:{name:"Steam (global avg)",ef:0.27000,unit:"kWh",scope:2,cat:"Purchased heat/steam"},
+    },
+    biz_travel:{
+      flight_dom:{name:"Flight — domestic economy",ef:0.25300,unit:"km",scope:3,cat:"Business travel"},
+      flight_short:{name:"Flight — short haul economy",ef:0.15600,unit:"km",scope:3,cat:"Business travel"},
+      flight_long:{name:"Flight — long haul economy",ef:0.14900,unit:"km",scope:3,cat:"Business travel"},
+      rail_avg:{name:"Rail (global avg)",ef:0.04100,unit:"km",scope:3,cat:"Business travel"},
+    },
+    employee_commute:{
+      commute_car:{name:"Car (global avg)",ef:0.17900,unit:"km",scope:3,cat:"Employee commuting"},
+      commute_bus:{name:"Bus (global avg)",ef:0.09500,unit:"km",scope:3,cat:"Employee commuting"},
+      commute_rail:{name:"Rail (global avg)",ef:0.04100,unit:"km",scope:3,cat:"Employee commuting"},
+    },
+    freight_up:{
+      freight_road:{name:"Road freight (global avg)",ef:0.11500,unit:"tonne.km",scope:3,cat:"Upstream freight"},
+      freight_rail:{name:"Rail freight (global avg)",ef:0.02900,unit:"tonne.km",scope:3,cat:"Upstream freight"},
+      freight_sea:{name:"Sea freight (container)",ef:0.01300,unit:"tonne.km",scope:3,cat:"Upstream freight"},
+      freight_air:{name:"Air freight",ef:1.70000,unit:"tonne.km",scope:3,cat:"Upstream freight"},
+    },
+    freight_down:{
+      freight_road:{name:"Road outbound",ef:0.11500,unit:"tonne.km",scope:3,cat:"Downstream freight"},
+      freight_sea:{name:"Sea outbound",ef:0.01300,unit:"tonne.km",scope:3,cat:"Downstream freight"},
+    },
+    waste:{
+      landfill:{name:"Landfill (global avg)",ef:480.00,unit:"tonnes",scope:3,cat:"Waste"},
+      recycling:{name:"Recycling",ef:20.00,unit:"tonnes",scope:3,cat:"Waste"},
+      composting:{name:"Composting",ef:110.00,unit:"tonnes",scope:3,cat:"Waste"},
+    },
+    water:{
+      water_supply:{name:"Water supply (global avg)",ef:0.34400,unit:"m³",scope:3,cat:"Water"},
+    },
+    hotel:{
+      hotel_global:{name:"Hotel — global avg",ef:62.00,unit:"room nights",scope:3,cat:"Business travel"},
+    },
+    purchased_goods:{
+      spend_food:{name:"Food & agriculture",ef:2.05,unit:"$k",scope:3,cat:"Purchased goods"},
+      spend_general:{name:"General goods",ef:0.90,unit:"$k",scope:3,cat:"Purchased goods"},
+    },
+    capital_goods:{
+      cap_general:{name:"General capital goods",ef:0.50,unit:"$k",scope:3,cat:"Capital goods"},
+    },
+    fuel_energy:{
+      wtt_elec:{name:"WTT electricity (global avg)",ef:0.04800,unit:"kWh",scope:3,cat:"Fuel & energy (WTT)"},
+      wtt_diesel:{name:"WTT diesel (global avg)",ef:0.68000,unit:"litres",scope:3,cat:"Fuel & energy (WTT)"},
+    },
+    end_of_life:{
+      eol_landfill:{name:"Product to landfill",ef:480.00,unit:"tonnes",scope:3,cat:"End of life"},
+      eol_recycle:{name:"Product to recycling",ef:20.00,unit:"tonnes",scope:3,cat:"End of life"},
+    },
+    paper:{
+      paper_office:{name:"Office paper (global avg)",ef:1.70,unit:"reams",scope:3,cat:"Materials"},
+    }
+  }
+};
+
+const S3_CATS = ['biz_travel','employee_commute','freight_up','freight_down','waste','water','hotel','purchased_goods','capital_goods','fuel_energy','end_of_life','paper'];
+
+let activeRegion = 'UK';
+let entries = [];
+let donutChart=null, barChart=null, s3ChartInst=null;
+
+function setRegion(r, btn){
+  activeRegion = r;
+  document.querySelectorAll('.region-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('region-label').textContent = '— ' + EF_DB[r].label + ' active';
+  populateDropdowns();
+  updateEFInfo();
+}
+
+function getEF(){ return EF_DB[activeRegion]; }
+
+function populateDropdowns(){
+  const ef = getEF();
+  const fill = (id, data) => {
+    const sel = document.getElementById(id);
+    if(!sel||!data)return;
+    sel.innerHTML = Object.entries(data).map(([k,d])=>`<option value="${k}">${d.name} (${d.ef<1?d.ef.toFixed(5):d.ef.toFixed(2)} kgCO₂e/${d.unit})</option>`).join('');
+  };
+  fill('s1-fuel', ef.fuel);
+  fill('s1-fleet', ef.fleet);
+  fill('s1-refrig', ef.refrig);
+  fill('s2-elec', ef.elec);
+  fill('s2-heat', ef.heat);
+  updateS3Sub();
+  updateEFInfo();
+}
+
+function updateEFInfo(){
+  const ef = getEF();
+  const gridKey = Object.keys(ef.elec)[0];
+  const gridEF = ef.elec[gridKey];
+  document.getElementById('s1-ef-info').innerHTML = `<strong>Active source:</strong> ${ef.label} &nbsp;|&nbsp; <strong>Primary fuel EF:</strong> ${ef.fuel[Object.keys(ef.fuel)[0]].name} = ${ef.fuel[Object.keys(ef.fuel)[0]].ef} kgCO₂e/${ef.fuel[Object.keys(ef.fuel)[0]].unit}`;
+  document.getElementById('s2-ef-info').innerHTML = `<strong>Active source:</strong> ${ef.label} &nbsp;|&nbsp; <strong>Grid EF:</strong> ${gridEF.name} = ${gridEF.ef} kgCO₂e/kWh`;
+}
+
+function updateS3Sub(){
+  const ef = getEF();
+  const cat = document.getElementById('s3-cat')?.value;
+  if(!cat)return;
+  const data = ef[cat];
+  const panel = document.getElementById('s3-input-panel');
+  if(!data){panel.innerHTML='<p style="font-size:12px;color:var(--color-text-secondary,#666)">Category not available for this region.</p>';return;}
+  const opts = Object.entries(data).map(([k,d])=>`<option value="${k}">${d.name} — ${d.ef<1?d.ef.toFixed(5):d.ef.toFixed(3)} kgCO₂e/${d.unit}</option>`).join('');
+  panel.innerHTML=`<div class="add-row"><div class="form-group" style="min-width:260px"><label class="fl">Activity / sub-type</label><select id="s3-sub">${opts}</select></div><div class="form-group" style="max-width:120px"><label class="fl">Quantity</label><input type="number" id="s3-qty" min="0" value="100"></div><button class="btn btn-primary" style="align-self:flex-end" onclick="addEntry('s3','sub')">Add</button></div>`;
+}
+
+function addEntry(scope, type){
+  const ef = getEF();
+  let key, qty, label, efVal, unit, catLabel, subType;
+  try{
+    if(scope==='s1'){
+      if(type==='fuel'){key=document.getElementById('s1-fuel').value;qty=parseFloat(document.getElementById('s1-fuel-qty').value)||0;const d=ef.fuel[key];efVal=d.ef;label=d.name;unit=document.getElementById('s1-fuel-unit').value;catLabel=d.cat;}
+      else if(type==='fleet'){key=document.getElementById('s1-fleet').value;qty=parseFloat(document.getElementById('s1-fleet-qty').value)||0;const d=ef.fleet[key];efVal=d.ef;label=d.name;unit=d.unit;catLabel=d.cat;}
+      else if(type==='refrig'){key=document.getElementById('s1-refrig').value;qty=parseFloat(document.getElementById('s1-refrig-qty').value)||0;const d=ef.refrig[key];efVal=d.ef;label=d.name;unit=d.unit;catLabel=d.cat;}
+    } else if(scope==='s2'){
+      if(type==='elec'){key=document.getElementById('s2-elec').value;qty=parseFloat(document.getElementById('s2-elec-qty').value)||0;const d=ef.elec[key];efVal=d.ef;label=d.name;unit=d.unit;catLabel=d.cat;}
+      else if(type==='heat'){key=document.getElementById('s2-heat').value;qty=parseFloat(document.getElementById('s2-heat-qty').value)||0;const d=ef.heat[key];efVal=d.ef;label=d.name;unit=d.unit;catLabel=d.cat;}
+    } else if(scope==='s3'){
+      const cat=document.getElementById('s3-cat').value;key=document.getElementById('s3-sub')?.value;qty=parseFloat(document.getElementById('s3-qty')?.value)||0;const d=ef[cat]&&ef[cat][key];if(!d){alert('Select a valid activity.');return;}efVal=d.ef;label=d.name;unit=d.unit;catLabel=d.cat;subType=cat;}
+  }catch(e){alert('Please select an activity and enter a valid quantity.');return;}
+  if(!qty||qty<=0){alert('Please enter a quantity greater than 0.');return;}
+  const tCO2e=(efVal*qty)/1000;
+  entries.push({id:Date.now(),scope,type,key,label,qty,unit,efVal,tCO2e,catLabel,region:activeRegion,regionLabel:ef.label,subType:subType||type});
+  renderEntries();
+  updateDashboard();
+}
+
+function removeEntry(id){ entries=entries.filter(e=>e.id!==id); renderEntries(); updateDashboard(); }
+
+function renderEntries(){
+  ['s1','s2','s3'].forEach(s=>{
+    const el=document.getElementById(s+'-entries');
+    if(!el)return;
+    const se=entries.filter(e=>e.scope===s);
+    if(!se.length){el.innerHTML='<div class="empty-state">No entries yet. Add activities above.</div>';return;}
+    const total=se.reduce((a,b)=>a+b.tCO2e,0);
+    const rows=se.map(e=>`<tr><td>${e.label}</td><td style="color:var(--color-text-secondary)">${e.catLabel}</td><td><span class="tag tag-${e.region.toLowerCase()}">${e.regionLabel}</span></td><td>${e.qty.toLocaleString()}</td><td>${e.unit}</td><td>${e.efVal<1?e.efVal.toFixed(5):e.efVal.toFixed(3)}</td><td><strong>${e.tCO2e.toFixed(4)}</strong></td><td><button class="btn btn-danger" onclick="removeEntry(${e.id})">Remove</button></td></tr>`).join('');
+    el.innerHTML=`<table class="entries-table"><thead><tr><th>Activity</th><th>Category</th><th>EF Source</th><th>Qty</th><th>Unit</th><th>EF (kgCO₂e)</th><th>tCO₂e</th><th></th></tr></thead><tbody>${rows}<tr class="total-row"><td colspan="6" style="padding:6px 8px;font-size:11px">Total ${s.toUpperCase()}</td><td style="padding:6px 8px"><strong>${total.toFixed(4)}</strong></td><td></td></tr></tbody></table>`;
+  });
+}
+
+function updateDashboard(){
+  const s1t=entries.filter(e=>e.scope==='s1').reduce((a,b)=>a+b.tCO2e,0);
+  const s2t=entries.filter(e=>e.scope==='s2').reduce((a,b)=>a+b.tCO2e,0);
+  const s3t=entries.filter(e=>e.scope==='s3').reduce((a,b)=>a+b.tCO2e,0);
+  const total=s1t+s2t+s3t;
+  document.getElementById('mc-total').textContent=total.toFixed(3);
+  document.getElementById('mc-s1').textContent=s1t.toFixed(3);
+  document.getElementById('mc-s2').textContent=s2t.toFixed(3);
+  document.getElementById('mc-s3').textContent=s3t.toFixed(3);
+  renderDonut(s1t,s2t,s3t);
+  renderBar();
+  renderS3Chart();
+  renderSummaryTable(s1t,s2t,s3t,total);
+  updateExportPreview();
+}
+
+function renderDonut(s1,s2,s3){
+  const ctx=document.getElementById('donutChart');if(!ctx)return;
+  const colors=['#3266ad','#3a9e6e','#d97706'];
+  const data=[s1,s2,s3];const labels=['Scope 1','Scope 2','Scope 3'];
+  const lg=document.getElementById('donut-legend');
+  if(lg)lg.innerHTML=labels.map((l,i)=>`<span><span class="ldot" style="background:${colors[i]}"></span>${l}: ${data[i].toFixed(3)}</span>`).join('');
+  if(donutChart)donutChart.destroy();
+  donutChart=new Chart(ctx,{type:'doughnut',data:{labels,datasets:[{data,backgroundColor:colors,borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`${c.label}: ${c.raw.toFixed(4)} tCO₂e`}}}}});
+}
+
+function renderBar(){
+  const ctx=document.getElementById('barChart');if(!ctx)return;
+  const cats={};entries.forEach(e=>{const c=e.catLabel||'Other';cats[c]=(cats[c]||0)+e.tCO2e;});
+  if(barChart)barChart.destroy();
+  barChart=new Chart(ctx,{type:'bar',data:{labels:Object.keys(cats),datasets:[{label:'tCO₂e',data:Object.values(cats),backgroundColor:'#3266ad',borderRadius:3,borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',plugins:{legend:{display:false}},scales:{x:{ticks:{callback:v=>v.toFixed(2)}}}}});
+}
+
+function renderS3Chart(){
+  const wrap=document.getElementById('s3chart-wrap');if(!wrap)return;
+  const s3e=entries.filter(e=>e.scope==='s3');
+  if(!s3e.length){wrap.innerHTML='<div class="empty-state">No Scope 3 entries yet.</div>';return;}
+  if(!wrap.querySelector('canvas'))wrap.innerHTML='<canvas id="s3Chart"></canvas>';
+  const ctx=document.getElementById('s3Chart');if(!ctx)return;
+  const cats={};s3e.forEach(e=>{cats[e.label]=(cats[e.label]||0)+e.tCO2e;});
+  if(s3ChartInst)s3ChartInst.destroy();
+  s3ChartInst=new Chart(ctx,{type:'bar',data:{labels:Object.keys(cats),datasets:[{label:'tCO₂e',data:Object.values(cats),backgroundColor:'#d97706',borderRadius:3,borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{ticks:{maxRotation:40,autoSkip:false,font:{size:10}}}}}});
+}
+
+function renderSummaryTable(s1,s2,s3,total){
+  const el=document.getElementById('summary-table');if(!el)return;
+  if(!total){el.innerHTML='';return;}
+  const rows=entries.map(e=>`<tr><td><span class="tag tag-s${e.scope.replace('s','')}">${e.scope.toUpperCase()}</span></td><td>${e.label}</td><td>${e.catLabel}</td><td><span class="tag tag-${e.region.toLowerCase()}" style="font-size:9px">${e.region}</span></td><td>${e.qty.toLocaleString()} ${e.unit}</td><td>${e.tCO2e.toFixed(4)}</td><td>${(e.tCO2e/total*100).toFixed(1)}%</td></tr>`).join('');
+  el.innerHTML=`<div><h3 style="font-size:12px;font-weight:500;margin-bottom:8px">Full inventory</h3><table class="entries-table"><thead><tr><th>Scope</th><th>Activity</th><th>Category</th><th>Region</th><th>Quantity</th><th>tCO₂e</th><th>% of total</th></tr></thead><tbody>${rows}<tr class="total-row"><td colspan="5" style="padding:6px 8px;font-size:11px;font-weight:500">Grand total</td><td style="padding:6px 8px;font-weight:500">${total.toFixed(4)}</td><td style="padding:6px 8px">100%</td></tr></tbody></table></div>`;
+}
+
+function renderEFTable(){
+  const regionF=document.getElementById('ef-region-filter')?.value||'all';
+  const scopeF=document.getElementById('ef-scope-filter')?.value||'all';
+  const search=(document.getElementById('ef-search')?.value||'').toLowerCase();
+  let rows=[];
+  Object.entries(EF_DB).forEach(([region,rdata])=>{
+    if(regionF!=='all'&&region!==regionF)return;
+    const regionLabel=rdata.label;
+    Object.entries(rdata).forEach(([type,items])=>{
+      if(typeof items!=='object'||!items||['label','source'].includes(type))return;
+      Object.entries(items).forEach(([k,d])=>{
+        if(!d.scope)return;
+        if(scopeF!=='all'&&String(d.scope)!==scopeF)return;
+        if(search&&!d.name.toLowerCase().includes(search)&&!(d.cat||'').toLowerCase().includes(search))return;
+        const tagClass='tag-'+region.toLowerCase();
+        rows.push(`<tr><td><span class="tag ${tagClass}">${region}</span></td><td style="color:var(--color-text-secondary,#666);font-size:10px">${regionLabel}</td><td><span class="tag tag-s${d.scope}">S${d.scope}</span></td><td>${d.name}</td><td>${d.cat||''}</td><td>${d.ef<0.001?d.ef.toExponential(3):d.ef.toFixed(5)}</td><td>kgCO₂e/${d.unit}</td></tr>`);
+      });
+    });
+  });
+  document.getElementById('ef-table-container').innerHTML=`<table class="ef-table"><thead><tr><th>Region</th><th>Source</th><th>Scope</th><th>Activity</th><th>Category</th><th>EF value</th><th>Unit</th></tr></thead><tbody>${rows.join('')}</tbody></table><p style="font-size:10px;color:var(--color-text-secondary,#666);margin-top:8px">${rows.length} factors shown</p>`;
+}
+
+function buildReportText(){
+  const org=document.getElementById('org-name')?.value||'[Organisation]';
+  const year=document.getElementById('report-year')?.value||'2025';
+  const notes=document.getElementById('report-notes')?.value||'';
+  const s1t=entries.filter(e=>e.scope==='s1').reduce((a,b)=>a+b.tCO2e,0);
+  const s2t=entries.filter(e=>e.scope==='s2').reduce((a,b)=>a+b.tCO2e,0);
+  const s3t=entries.filter(e=>e.scope==='s3').reduce((a,b)=>a+b.tCO2e,0);
+  const total=s1t+s2t+s3t;
+  const line='─'.repeat(60);
+  let txt=`GHG EMISSIONS REPORT\n${line}\nOrganisation : ${org}\nReporting year: ${year}\nReport date  : ${new Date().toLocaleDateString('en-GB',{day:'2-digit',month:'long',year:'numeric'})}\nBoundary/notes: ${notes||'Not specified'}\nCalculator   : Multi-Region GHG Calculator (GHG Protocol aligned)\n\n`;
+  txt+=`EMISSION FACTOR SOURCES USED\n${line}\n`;
+  const regionsUsed=[...new Set(entries.map(e=>e.region))];
+  if(regionsUsed.length){regionsUsed.forEach(r=>{txt+=`  ${EF_DB[r].label}: ${EF_DB[r].source}\n`;});}
+  else{txt+=`  No entries added yet.\n`;}
+  txt+=`\nSUMMARY\n${line}\n`;
+  txt+=`  Scope 1 (Direct emissions)        : ${s1t.toFixed(4)} tCO₂e\n`;
+  txt+=`  Scope 2 (Purchased energy)        : ${s2t.toFixed(4)} tCO₂e\n`;
+  txt+=`  Scope 3 (Value chain)             : ${s3t.toFixed(4)} tCO₂e\n`;
+  txt+=`  ─────────────────────────────────────────────────\n`;
+  txt+=`  TOTAL                             : ${total.toFixed(4)} tCO₂e\n\n`;
+  if(entries.length){
+    txt+=`ACTIVITY DETAIL\n${line}\n`;
+    txt+=`${'Scope'.padEnd(8)}${'Activity'.padEnd(36)}${'Category'.padEnd(22)}${'EF Source'.padEnd(18)}${'Qty'.padEnd(14)}${'Unit'.padEnd(14)}${'EF'.padEnd(12)}tCO₂e\n`;
+    txt+=`${'-'.repeat(130)}\n`;
+    entries.forEach(e=>{
+      txt+=`${e.scope.toUpperCase().padEnd(8)}${e.label.substring(0,34).padEnd(36)}${(e.catLabel||'').substring(0,20).padEnd(22)}${e.region.padEnd(18)}${String(e.qty.toLocaleString()).padEnd(14)}${e.unit.padEnd(14)}${(e.efVal<1?e.efVal.toFixed(5):e.efVal.toFixed(3)).padEnd(12)}${e.tCO2e.toFixed(4)}\n`;
+    });
+    txt+=`\n${''.padEnd(106)+'TOTAL:'.padEnd(12)}${total.toFixed(4)} tCO₂e\n`;
+  } else {
+    txt+=`ACTIVITY DETAIL\n${line}\nNo entries recorded.\n`;
+  }
+  txt+=`\nDISCLAIMER\n${line}\nThis report has been generated using the Multi-Region GHG Emissions Calculator.\nEmission factors are sourced from official government and intergovernmental bodies.\nAll calculations use GWP100 values from IPCC AR6. Results are indicative and should\nbe reviewed by a qualified GHG professional for formal reporting purposes.\n`;
+  return txt;
+}
+
+function updateExportPreview(){
+  const el=document.getElementById('export-preview');
+  if(el)el.textContent=buildReportText();
+}
+
+function exportTXT(){
+  const txt=buildReportText();
+  const org=(document.getElementById('org-name')?.value||'GHG_Report').replace(/\s+/g,'_');
+  const year=document.getElementById('report-year')?.value||'2025';
+  const blob=new Blob([txt],{type:'text/plain;charset=utf-8'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;a.download=`${org}_GHG_Report_${year}.txt`;
+  document.body.appendChild(a);a.click();
+  setTimeout(()=>{document.body.removeChild(a);URL.revokeObjectURL(url);},100);
+}
+
+function exportCSV(){
+  const org=(document.getElementById('org-name')?.value||'GHG_Report').replace(/\s+/g,'_');
+  const year=document.getElementById('report-year')?.value||'2025';
+  let csv='Scope,Activity,Category,EF Source,EF Source Label,Quantity,Unit,EF (kgCO2e per unit),tCO2e,% of Total\n';
+  const total=entries.reduce((a,b)=>a+b.tCO2e,0);
+  entries.forEach(e=>{
+    csv+=`"${e.scope.toUpperCase()}","${e.label}","${e.catLabel}","${e.region}","${e.regionLabel}",${e.qty},"${e.unit}",${e.efVal},${e.tCO2e.toFixed(6)},${total>0?(e.tCO2e/total*100).toFixed(2):0}\n`;
+  });
+  csv+=`\nTOTAL,,,,,,,,${total.toFixed(6)},100\n`;
+  csv+=`\nScope 1,,,,,,,,${entries.filter(e=>e.scope==='s1').reduce((a,b)=>a+b.tCO2e,0).toFixed(6)},\n`;
+  csv+=`Scope 2,,,,,,,,${entries.filter(e=>e.scope==='s2').reduce((a,b)=>a+b.tCO2e,0).toFixed(6)},\n`;
+  csv+=`Scope 3,,,,,,,,${entries.filter(e=>e.scope==='s3').reduce((a,b)=>a+b.tCO2e,0).toFixed(6)},\n`;
+  const blob=new Blob([csv],{type:'text/csv;charset=utf-8'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;a.download=`${org}_GHG_Data_${year}.csv`;
+  document.body.appendChild(a);a.click();
+  setTimeout(()=>{document.body.removeChild(a);URL.revokeObjectURL(url);},100);
+}
+
+function printReport(){
+  const txt=buildReportText();
+  const escaped=txt.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  const html=`<!DOCTYPE html><html><head><title>GHG Report</title><style>body{font-family:monospace;font-size:12px;padding:24px;white-space:pre-wrap;line-height:1.6}@media print{body{padding:12px}}</style></head><body>${escaped}</body></html>`;
+  const blob=new Blob([html],{type:'text/html;charset=utf-8'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;
+  a.target='_blank';
+  a.rel='noopener';
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(()=>{document.body.removeChild(a);URL.revokeObjectURL(url);},300);
+}
+
+function switchTab(name, el){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  ['scope1','scope2','scope3','dashboard','ef','export'].forEach(t=>{const d=document.getElementById('tab-'+t);if(d)d.style.display='none';});
+  document.getElementById('tab-'+name).style.display='block';
+  if(name==='dashboard')updateDashboard();
+  if(name==='ef')renderEFTable();
+  if(name==='export')updateExportPreview();
+}
+
+// Init
+populateDropdowns();
+renderEntries();
+</script>
+</body>
+</html>
